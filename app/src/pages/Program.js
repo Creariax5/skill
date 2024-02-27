@@ -4,6 +4,8 @@ import { Image } from "expo-image";
 
 import { styleExo, styleStep, styles } from "./program";
 
+import Wrapper from "../Wrapper";
+
 const imgSrc = "../../assets/";
 const nbStep = 3;
 
@@ -211,7 +213,7 @@ function renderStep(nb, data, setData, step, setstep) {
     return items;
 }
 
-const Program = (skillData) => {
+const ProgPage = ({ skillData }) => {
     const scrollViewRef = React.useRef(null);
 
     const [data, setData] = useState([]);
@@ -219,7 +221,7 @@ const Program = (skillData) => {
 
     React.useEffect(() => {
         // Déplacer la ScrollView vers le bas lors du chargement de la page
-        scrollViewRef.current.scrollToEnd({ animated: true });
+        scrollViewRef.current.scrollToEnd({ animated: false });
 
     }, []);
 
@@ -231,6 +233,7 @@ const Program = (skillData) => {
             contentContainerStyle={styles.speScrollViewContent}
             ref={scrollViewRef}
         >
+            <Text>{skillData}</Text>
             {nbStep < step ?
                 <Image
                     style={[styles.trophy, styles.trophyFinish]}
@@ -248,6 +251,14 @@ const Program = (skillData) => {
             {renderStep(nbStep, data, setData, step, setstep)}
 
         </ScrollView>
+    );
+}
+
+const Program = ({ skillData }) => {
+    return (
+        <Wrapper>
+            <ProgPage skillData={skillData} />
+        </Wrapper>
     );
 };
 

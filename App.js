@@ -5,26 +5,45 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
-import { View } from 'react-native';
+import { View, BackHandler, Alert } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
 import { Color } from "./app/src/GlobalStyles";
 
+function backListener(currentSkill) {
+	useEffect(() => {
+		const backAction = () => {
+			currentSkill = 0;
+
+			return true;
+		};
+
+		const backHandler = BackHandler.addEventListener(
+			'hardwareBackPress',
+			backAction,
+		);
+
+		return () => backHandler.remove();
+	}, []);
+}
+
 function HomeScreen() {
 	const insets = useSafeAreaInsets();
 
-	const [currentSkill, setCurrentSkill] = useState([]);
+	const [currentSkill, setCurrentSkill] = useState(0);
+
+	backListener(currentSkill)
 
 	return (
 		<View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom, paddingRight: insets.right, paddingLeft: insets.left, backgroundColor: Color.black }}>
 			{
-				true
+				currentSkill == 0
 					?
-					Skills()
+					Skills(currentSkill, setCurrentSkill)
 					:
-					<Program />
+					Program(currentSkill, setCurrentSkill)
 			}
 		</View>
 	);

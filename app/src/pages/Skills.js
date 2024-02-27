@@ -1,6 +1,5 @@
-import { TouchableOpacity, ScrollView, Text, View } from "react-native";
-import { Link, router } from 'expo-router';
-import { Image } from "expo-image";
+import { TouchableOpacity, ScrollView, Text, View, ToastAndroid } from "react-native";
+import { useState } from 'react'; import { Image } from "expo-image";
 
 import { styles, boxStyle } from "./skills";
 
@@ -8,14 +7,20 @@ const imgSrc = "../../assets/";
 
 const nbSkills = 3;
 
-function progSrc() { }
+function progSrc(key, currentSkill) {
+    currentSkill = key;
 
-function Box(key) {
+}
+
+function Box(key, currentSkill, skillsData, setSkillsData) {
+
+    var mySkill = skillsData.find(item => item.id === key);
+
     return (
         <TouchableOpacity
             key={key}
             style={[boxStyle.box]}
-            onPress={() => progSrc()}
+            onPress={() => progSrc(key, currentSkill)}
         >
             <View style={[boxStyle.buttons]} />
             <View style={boxStyle.contentContainer}>
@@ -25,9 +30,9 @@ function Box(key) {
                     source={require(imgSrc + "pushup.gif")}
                 />
                 <View style={boxStyle.textContainer}>
-                    <Text style={boxStyle.skillName}>Human flag</Text>
+                    <Text style={boxStyle.skillName}>{mySkill.name}</Text>
                     <Text style={[boxStyle.skillDesc]}>
-                        Difficulty : Hard
+                        {mySkill.text}
                     </Text>
                 </View>
             </View>
@@ -43,20 +48,26 @@ function Box(key) {
     );
 }
 
-function renderSkills(nb) {
+function renderSkills(nb, currentSkill, skillsData, setSkillsData) {
     var items = [];
 
     for (let i = 0; i < nb; i++) {
-        items.push(Box(nb - i));
+        skillsData.push({
+            id: i + 1,
+            name: "Human flag",
+            text: "Difficulty : hard",
+        });
+
+        items.push(Box(i + 1, currentSkill, skillsData, setSkillsData));
     }
 
     return items;
 }
 
-const Skills = () => {
+const Skills = (currentSkill) => {
+    const [skillsData, setSkillsData] = useState([]);
 
     return (
-
         <View style={styles.skills}>
             <View style={styles.info}>
                 <View style={styles.frame}>
@@ -76,7 +87,7 @@ const Skills = () => {
                 showsHorizontalScrollIndicator={false}
             >
                 <View style={styles.items}>
-                    {renderSkills(nbSkills)}
+                    {renderSkills(nbSkills, currentSkill, skillsData, setSkillsData)}
                 </View>
             </ScrollView>
         </View>
