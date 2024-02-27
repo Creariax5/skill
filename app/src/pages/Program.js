@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ScrollView, Text, View, Pressable, TouchableOpacity, ToastAndroid } from "react-native";
 import { Image } from "expo-image";
 
-import { styleScroll } from "../GlobalStyles";
 import { styleExo, styleStep, styles } from "./program";
 
 const imgSrc = "../../assets/";
@@ -212,7 +211,7 @@ function renderStep(nb, data, setData, step, setstep) {
     return items;
 }
 
-const Program = () => {
+const Program = (skillData) => {
     const scrollViewRef = React.useRef(null);
 
     const [data, setData] = useState([]);
@@ -226,10 +225,10 @@ const Program = () => {
 
     return (
         <ScrollView
-            style={styleScroll.spe}
+            style={styles.spe}
             showsVerticalScrollIndicator={true}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styleScroll.speScrollViewContent}
+            contentContainerStyle={styles.speScrollViewContent}
             ref={scrollViewRef}
         >
             {nbStep < step ?

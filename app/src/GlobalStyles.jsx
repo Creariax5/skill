@@ -1,5 +1,3 @@
-//import { useFonts } from 'expo-font';
-import { StyleSheet } from "react-native";
 
 /* fonts */
 export const FontFamily = {
@@ -32,19 +30,5 @@ export const Border = {
 };
 
 export const Padding = {
-    p_lgi: 19,
+    p_lgi: 20,
 };
-
-export const styleScroll = StyleSheet.create({
-    spe: {
-        flex: 1,
-        overflow: "hidden",
-        width: "100%",
-        backgroundColor: Color.black,
-    },
-    speScrollViewContent: {
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-    },
-});

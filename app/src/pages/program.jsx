@@ -142,6 +142,17 @@ export const styleStep = StyleSheet.create({
 
 //Main StyleSheet
 export const styles = StyleSheet.create({
+    spe: {
+        flex: 1,
+        overflow: "hidden",
+        width: "100%",
+        backgroundColor: Color.black,
+    },
+    speScrollViewContent: {
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+    },
     trophy: {
         height: 300,
         margin: 33,
