@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { ScrollView, Text, View, Pressable, TouchableOpacity, ToastAndroid } from "react-native";
+import { useLocalSearchParams } from 'expo-router';
 import { Image } from "expo-image";
 
-import { styleExo, styleStep, styles } from "./program";
+import { styleExo, styleStep, styles } from "../program";
 
-import Wrapper from "../Wrapper";
-
-const imgSrc = "../../assets/";
+const imgSrc = "../../../assets/";
 const nbStep = 3;
 
 const exoStatu = {
@@ -213,8 +212,10 @@ function renderStep(nb, data, setData, step, setstep) {
     return items;
 }
 
-const ProgPage = ({ skillData }) => {
+const Program = () => {
     const scrollViewRef = React.useRef(null);
+
+    const { progId } = useLocalSearchParams();
 
     const [data, setData] = useState([]);
     const [step, setstep] = useState(1);
@@ -224,41 +225,31 @@ const ProgPage = ({ skillData }) => {
         scrollViewRef.current.scrollToEnd({ animated: false });
 
     }, []);
-
     return (
-        <ScrollView
-            style={styles.spe}
-            showsVerticalScrollIndicator={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.speScrollViewContent}
-            ref={scrollViewRef}
-        >
-            <Text>{skillData}</Text>
-            {nbStep < step ?
-                <Image
-                    style={[styles.trophy, styles.trophyFinish]}
-                    contentFit="contain"
-                    source={require(imgSrc + "trophy.png")}
-                />
-                :
-                <Image
-                    style={[styles.trophy]}
-                    contentFit="contain"
-                    source={require(imgSrc + "trophy.png")}
-                />
-            }
+                <ScrollView
+                    style={styles.spe}
+                    showsVerticalScrollIndicator={true}
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.speScrollViewContent}
+                    ref={scrollViewRef}
+                >
+                    {nbStep < step ?
+                        <Image
+                            style={[styles.trophy, styles.trophyFinish]}
+                            contentFit="contain"
+                            source={require(imgSrc + "trophy.png")}
+                        />
+                        :
+                        <Image
+                            style={[styles.trophy]}
+                            contentFit="contain"
+                            source={require(imgSrc + "trophy.png")}
+                        />
+                    }
 
-            {renderStep(nbStep, data, setData, step, setstep)}
+                    {renderStep(nbStep, data, setData, step, setstep)}
 
-        </ScrollView>
-    );
-}
-
-const Program = ({ skillData }) => {
-    return (
-        <Wrapper>
-            <ProgPage skillData={skillData} />
-        </Wrapper>
+                </ScrollView>
     );
 };
 

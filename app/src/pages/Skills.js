@@ -1,28 +1,23 @@
-import { TouchableOpacity, ScrollView, Text, View, ToastAndroid } from "react-native";
-import { useState } from 'react'; import { Image } from "expo-image";
+import { TouchableOpacity, ScrollView, Text, View } from "react-native";
+import { router } from 'expo-router';
+import { useState, useEffect } from 'react'; import { Image } from "expo-image";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { styles, boxStyle } from "./skills";
 
 const imgSrc = "../../assets/";
 
-const nbSkills = 3;
-
-function progSrc(key, currentSkill) {
-    currentSkill = key;
-
-}
-
-function Box(key, currentSkill, skillsData, setSkillsData) {
-
+function Box(key, skillsData, setSkillsData, toEdit, setToEdit) {
     var mySkill = skillsData.find(item => item.id === key);
 
     return (
         <TouchableOpacity
             key={key}
-            style={[boxStyle.box]}
-            onPress={() => progSrc(key, currentSkill)}
+            style={boxStyle.box}
+            onPress={() => { toEdit == key ? router.push('./editProgram/' + key) : router.push('./program/' + key) }}
+            onLongPress={() => toEdit == key ? setToEdit(0) : setToEdit(key)}
         >
-            <View style={[boxStyle.buttons]} />
+            <View style={toEdit == key ? boxStyle.buttonSelect : boxStyle.buttons} />
             <View style={boxStyle.contentContainer}>
                 <Image
                     style={[boxStyle.img, boxStyle.groupChildPosition]}
@@ -36,43 +31,62 @@ function Box(key, currentSkill, skillsData, setSkillsData) {
                     </Text>
                 </View>
             </View>
-            <TouchableOpacity style={[boxStyle.edit]}>
-                <View style={[boxStyle.editColor]} />
-                <Image
-                    style={[boxStyle.pencilIcon, boxStyle.groupChildPosition]}
-                    contentFit="cover"
-                    source={require(imgSrc + "edit.png")}
-                />
-            </TouchableOpacity>
+            {toEdit == key ?
+                <TouchableOpacity
+                    style={[boxStyle.edit]}
+                    onPress={() => router.push('./editProgram/' + key)}
+                >
+                    <View style={[boxStyle.editColor]} />
+                    <Image
+                        style={[boxStyle.pencilIcon, boxStyle.groupChildPosition]}
+                        contentFit="cover"
+                        source={require(imgSrc + "edit.png")}
+                    />
+                </TouchableOpacity>
+                :
+                null
+            }
         </TouchableOpacity>
     );
 }
 
-function renderSkills(nb, currentSkill, skillsData, setSkillsData) {
+function RenderSkills({ skillsData, setSkillsData, toEdit, setToEdit }) {
     var items = [];
+    for (let i = 0; i < skillsData.length; i++) {
+        items.push(Box(i + 1, skillsData, setSkillsData, toEdit, setToEdit));
 
-    for (let i = 0; i < nb; i++) {
-        skillsData.push({
-            id: i + 1,
-            name: "Human flag",
-            text: "Difficulty : hard",
-        });
-
-        items.push(Box(i + 1, currentSkill, skillsData, setSkillsData));
     }
-
     return items;
 }
 
-const Skills = (currentSkill) => {
+const Skills = () => {
     const [skillsData, setSkillsData] = useState([]);
+    const [toEdit, setToEdit] = useState(0);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const savedData = await AsyncStorage.getItem("skills");
+                if (savedData !== null) {
+                    setSkillsData(JSON.parse(savedData));
+                }
+            } catch (error) {
+                console.error("Error loading data: ", error);
+            }
+        };
+        loadData();
+    }, []);
 
     return (
         <View style={styles.skills}>
             <View style={styles.info}>
                 <View style={styles.frame}>
                     <Text style={styles.callistenic}>Callistenic</Text>
-                    <Text style={[styles.skillsCount]}>15 skills</Text>
+                    {skillsData ?
+                        <Text style={[styles.skillsCount]}>{skillsData.length} skills</Text>
+                        :
+                        <Text style={[styles.skillsCount]}>0 skills</Text>
+                    }
                 </View>
                 <TouchableOpacity>
                     <Image
@@ -87,7 +101,12 @@ const Skills = (currentSkill) => {
                 showsHorizontalScrollIndicator={false}
             >
                 <View style={styles.items}>
-                    {renderSkills(nbSkills, currentSkill, skillsData, setSkillsData)}
+                    {skillsData ?
+                        <RenderSkills skillsData={skillsData} setSkillsData={setSkillsData} toEdit={toEdit} setToEdit={setToEdit} />
+                        :
+                        <View></View>
+                    }
+
                 </View>
             </ScrollView>
         </View>

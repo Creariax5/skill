@@ -16,6 +16,14 @@ export const boxStyle = StyleSheet.create({
         borderRadius: Border.br_xs,
         backgroundColor: Color.black,
     },
+    buttonSelect: {
+        borderColor: Color.yellow,
+        borderWidth: 4,
+        height: "100%",
+        width: "100%",
+        borderRadius: Border.br_xs,
+        backgroundColor: Color.black,
+    },
     editColor: {
         top: -10,
         left: -10,
@@ -54,7 +62,7 @@ export const boxStyle = StyleSheet.create({
     },
     skillName: {
         height: "51.02%",
-        width: "73.33%",
+        width: "90%",
         position: "absolute",
         alignItems: "center",
         display: "flex",
