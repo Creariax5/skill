@@ -12,7 +12,7 @@ const storeData = async (value) => {
   try {
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem('skills', jsonValue);
-    
+
   } catch (e) {
     // saving error
     console.error("saving error");
@@ -42,7 +42,7 @@ export default function App() {
     return null;
   }
 
-  storeData(
+  /*storeData(
     [
       {
         id: 1,
@@ -59,6 +59,36 @@ export default function App() {
         name: "Pompes sur 1 doigt",
         text: "Difficulty : medium"
       },
+      {
+        id: 4,
+        name: "Human flag",
+        text: "Difficulty : easy",
+      },
+      {
+        id: 5,
+        name: "Front lever",
+        text: "Difficulty : hard"
+      },
+      {
+        id: 6,
+        name: "Pompes sur 1 doigt",
+        text: "Difficulty : medium"
+      },
+      {
+        id: 7,
+        name: "Human flag",
+        text: "Difficulty : easy",
+      },
+      {
+        id: 8,
+        name: "Front lever",
+        text: "Difficulty : hard"
+      },
+      {
+        id: 9,
+        name: "Pompes sur 1 doigt",
+        text: "Difficulty : medium"
+      },
     ]
-  );
+  );*/
 }

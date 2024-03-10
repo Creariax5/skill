@@ -1,6 +1,7 @@
-import { TouchableOpacity, ScrollView, Text, View } from "react-native";
+import { TouchableOpacity, ScrollView, Text, View, Alert } from "react-native";
 import { router } from 'expo-router';
-import { useState, useEffect } from 'react'; import { Image } from "expo-image";
+import { useState, useEffect } from 'react';
+import { Image } from "expo-image";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { styles, boxStyle } from "./skills";
@@ -59,6 +60,18 @@ function RenderSkills({ skillsData, setSkillsData, toEdit, setToEdit }) {
     return items;
 }
 
+function createNewSkill() {
+    Alert.alert('New Skill', 'Do you want to create a new skill ?', [
+        {
+            text: 'No',
+            onPress: () => console.log('No Pressed'),
+            style: 'cancel',
+        },
+        { text: 'Yes', onPress: () => router.push('./AddSkill') },
+    ]);
+
+}
+
 const Skills = () => {
     const [skillsData, setSkillsData] = useState([]);
     const [toEdit, setToEdit] = useState(0);
@@ -108,6 +121,16 @@ const Skills = () => {
                     }
 
                 </View>
+                <TouchableOpacity
+                    style={[boxStyle.box]}
+                    onPress={createNewSkill}
+                >
+                    <Image
+                        style={styles.add}
+                        contentFit="fill"
+                        source={require(imgSrc + "plus.png")}
+                    />
+                </TouchableOpacity>
             </ScrollView>
         </View>
     );

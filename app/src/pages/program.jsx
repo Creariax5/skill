@@ -16,6 +16,14 @@ export const styleExo = StyleSheet.create({
         overflow: "hidden",
         width: "100%",
     },
+    exoAdder: {
+        height: "100%",
+        width: "100%",
+        borderTopLeftRadius: Border.br_xs,
+        borderTopRightRadius: Border.br_xs,
+        position: "absolute",
+        overflow: "hidden",
+    },
     pushUp: {
         top: "78%",
         textAlign: "center",
@@ -118,7 +126,7 @@ export const styleStep = StyleSheet.create({
         lineHeight: 24,
         fontSize: FontSize.size_5xl,
         top: "50%",
-        marginTop: -12,
+        marginTop: -10,
         left: "50%",
     },
     labelValidate: {
@@ -164,5 +172,30 @@ export const styles = StyleSheet.create({
     },
     trophyFinish: {
         opacity: 1,
+    },
+});
+
+export const modalStyle = StyleSheet.create({
+    main: {
+        backgroundColor: Color.black,
+    },
+    title: {
+        textAlign: "center",
+        color: Color.white,
+        fontFamily: FontFamily.coinyRegular,
+        lineHeight: 24,
+        fontSize: FontSize.size_5xl,
+        marginBottom: 20,
+    },
+    subTitle: {
+        color: Color.white,
+        fontSize: 22,
+        fontWeight: 'bold',
+        lineHeight: 34,
+        marginTop: 30,
+        marginBottom: 10,
+    },
+    text: {
+        color: Color.white,
     },
 });

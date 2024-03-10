@@ -62,7 +62,7 @@ export const boxStyle = StyleSheet.create({
     },
     skillName: {
         height: "51.02%",
-        width: "90%",
+        width: "150%",
         position: "absolute",
         alignItems: "center",
         display: "flex",
@@ -124,6 +124,14 @@ export const styles = StyleSheet.create({
         height: 28,
         top: 10,
         left: -5,
+
+    },
+    add: {
+        width: 62,
+        height: 62,
+        alignSelf: "center",
+        marginBottom: 48,
+        marginTop: 12,
 
     },
     info: {

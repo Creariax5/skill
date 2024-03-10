@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { ScrollView, Text, View, Pressable, TouchableOpacity, ToastAndroid } from "react-native";
 import { useLocalSearchParams } from 'expo-router';
 import { Image } from "expo-image";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Modalize } from 'react-native-modalize';
+import ExoModal from './exoModal';
 
-import { styleExo, styleStep, styles } from "../program";
+import { styleExo, styleStep, styles, modalStyle } from "../program";
 
 const imgSrc = "../../../assets/";
-const nbStep = 3;
 
 const exoStatu = {
     IN_PROGRESS: 0,
@@ -19,77 +21,107 @@ var images = [
     require(imgSrc + "pushup.gif"),
 ];
 
-function Exo(exoData, key, data, setData) {
+function Exo(stepData, id, key, data, setData) {
+    try {
+        exoData = stepData.exo.find(exoItem => exoItem.id === id);
+        return (
+            <View style={styleExo.exo}>
+                <Image
+                    style={styleExo.exoChild}
+                    contentFit="cover"
+                    source={images[exoData.img]}
+                />
+                <Text style={[styleExo.pushUp]}>PUSH UP</Text>
+                <Pressable
+                    style={[styleExo.exoItem]}
+                />
+                <View style={styleExo.exoPosition}>
+                    <Image
+                        style={styleExo.notifPosition}
+                        contentFit="cover"
+                        source={require(imgSrc + "notif.png")}
+                    />
+                    <Text style={[styleExo.textNotif]}>{exoData.text}</Text>
+                </View>
+            </View>
+        );
+    } catch (error) {
+        return Adder(id, key, openModal);
+    }
+
+}
+
+function Adder(id, key, openModal) {
     return (
         <View style={styleExo.exo}>
-            <Image
-                style={styleExo.exoChild}
-                contentFit="cover"
-                source={images[exoData.img]}
-            />
-            <Text style={[styleExo.pushUp]}>PUSH UP</Text>
-            <Pressable
+
+            <TouchableOpacity
                 style={[styleExo.exoItem]}
-            />
-            <View style={styleExo.exoPosition}>
+                onPress={() => openModal()}
+            >
                 <Image
-                    style={styleExo.notifPosition}
+                    style={styleExo.exoAdder}
                     contentFit="cover"
-                    source={require(imgSrc + "notif.png")}
+                    source={require(imgSrc + "add.png")}
                 />
-                <Text style={[styleExo.textNotif]}>{exoData.text}</Text>
-            </View>
+            </TouchableOpacity>
         </View>
     );
 }
 
-function Step(key, data, setData, step, setstep) {
+function Step(key, data, setData, openModal) {
     newData = data;
 
-    var stepData = newData.find(item => item.id === key);
-    return (
-        <View key={key} style={[styleStep.stepSpaceBlock]}>
-            <View style={[styleStep.childLayout]} />
+    var stepData;
 
-            <View style={[styleStep.buttons]} >
-                <Text style={[styleStep.label]}>Step {key}</Text>
-            </View>
+    try {
+        stepData = newData.find(item => item.id === key);
 
-            <View style={[styleStep.exos]}>
-                {Exo(stepData.exo.find(exoItem => exoItem.id === '0'), key, newData, setData)}
-                {Exo(stepData.exo.find(exoItem => exoItem.id === '1'), key, newData, setData)}
-                {Exo(stepData.exo.find(exoItem => exoItem.id === '2'), key, newData, setData)}
+        return (
+            <View key={key} style={[styleStep.stepSpaceBlock]}>
+                <View style={[styleStep.childLayout]} />
+
+                <View style={[styleStep.buttons]} >
+                    <Text style={[styleStep.label]}>Step {key}</Text>
+                </View>
+
+                <View style={[styleStep.exos]}>
+                    {Exo(stepData, '0', key, newData, setData)}
+                    {Exo(stepData, '1', key, newData, setData)}
+                    {Exo(stepData, '2', key, newData, setData)}
+                </View>
             </View>
-        </View>
-    );
+        );
+
+    } catch (error) {
+        return (
+            <View key={key} style={[styleStep.stepSpaceBlock]}>
+                <View style={[styleStep.childLayout]} />
+
+                <View style={[styleStep.buttons]} >
+                    <Text style={[styleStep.label]}>Step {key}</Text>
+                </View>
+
+                <View style={[styleStep.exos]}>
+                    {Adder('0', key, openModal)}
+                    {Adder('1', key, openModal)}
+                    {Adder('2', key, openModal)}
+                </View>
+            </View>
+        );
+    }
+
+
 }
 
-function renderStep(nb, data, setData, step, setstep) {
+function renderStep(data, setData, openModal) {
     var items = [];
 
-    for (let i = 0; i < nb; i++) {
-        if (step == nb - i) {
-            data.push({
-                id: nb - i,
-                exo: [
-                    { id: '0', statu: exoStatu.IN_PROGRESS, text: "8", img: 0 },
-                    { id: '1', statu: exoStatu.IN_PROGRESS, text: "30", img: 0 },
-                    { id: '2', statu: exoStatu.IN_PROGRESS, text: "1'30", img: 0 },
-                ],
-            });
-        } else {
-            data.push({
-                id: nb - i,
-                exo: [
-                    { id: '0', statu: exoStatu.TO_DO, text: "8", img: 0 },
-                    { id: '1', statu: exoStatu.TO_DO, text: "30", img: 0 },
-                    { id: '2', statu: exoStatu.TO_DO, text: "1'30", img: 0 },
-                ],
-            });
-        }
+    for (let i = 0; i < data.length; i++) {
 
-        items.push(Step(nb - i, data, setData, step, setstep));
+        items.push(Step(data.length - i, data, setData, openModal));
     }
+    items.push(Step(data.length, data, setData, openModal));
 
     return items;
 }
@@ -100,7 +132,9 @@ const Program = () => {
     const { progId } = useLocalSearchParams();
 
     const [data, setData] = useState([]);
-    const [step, setstep] = useState(1);
+
+    const modalRef = React.useRef(null);
+    const openModal = () => modalRef?.current?.open();
 
     React.useEffect(() => {
         // Déplacer la ScrollView vers le bas lors du chargement de la page
@@ -108,22 +142,32 @@ const Program = () => {
 
     }, []);
     return (
-        <ScrollView
-            style={styles.spe}
-            showsVerticalScrollIndicator={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.speScrollViewContent}
-            ref={scrollViewRef}
-        >
-            <Image
-                style={[styles.trophy, styles.trophyFinish]}
-                contentFit="contain"
-                source={require(imgSrc + "trophy.png")}
-            />
+        <GestureHandlerRootView style={styles.spe}>
+            <ScrollView
+                style={styles.spe}
+                showsVerticalScrollIndicator={true}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.speScrollViewContent}
+                ref={scrollViewRef}
+            >
+                <Image
+                    style={[styles.trophy, styles.trophyFinish]}
+                    contentFit="contain"
+                    source={require(imgSrc + "trophy.png")}
+                />
 
-            {renderStep(nbStep, data, setData, step, setstep)}
+                {renderStep(data, setData, openModal)}
 
-        </ScrollView>
+            </ScrollView>
+            <Modalize
+                ref={modalRef}
+                scrollViewProps={{ showsVerticalScrollIndicator: false }}
+                snapPoint={700}
+                modalStyle={modalStyle.main}
+            >
+                <ExoModal />
+            </Modalize>
+        </GestureHandlerRootView>
     );
 };
 
