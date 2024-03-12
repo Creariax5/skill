@@ -1,51 +1,19 @@
 import React from "react";
 
-import { TouchableOpacity, ScrollView, Text, View, Alert, TextInput } from "react-native";
+import { TouchableOpacity, Text, View, Alert } from "react-native";
 import { router } from 'expo-router';
-import { useState, useEffect } from 'react'; import { Image } from "expo-image";
+import { useState, useEffect } from 'react';
+import { Image } from "expo-image";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from "expo-status-bar";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Formik } from "formik";
 import { validationSchema } from "./form/validation";
-import { styles } from "./addSkill";
+import FormField from "./form/formField";
+import { formStyles } from "./addSkill";
+
 
 const imgSrc = "../../assets/";
-
-
-function FormField({
-    field,
-    label,
-    secureTextEntry,
-    autoCapitalize,
-    values,
-    touched,
-    errors,
-    handleChange,
-    handleBlur,
-}) {
-    return (
-        <View style={styles.formGroup}>
-            <Text style={styles.label}>{label}</Text>
-
-            <TextInput
-                style={styles.input}
-                value={values[field]}
-                onChangeText={handleChange(field)}
-                onBlur={handleBlur(field)}
-                secureTextEntry={secureTextEntry}
-                autoCapitalize={autoCapitalize || "none"}
-            />
-
-            {touched[field] && errors[field] ? (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{errors[field]}</Text>
-                </View>
-            ) : null}
-        </View>
-    );
-}
-
 
 const AddSkills = () => {
     function onSubmitHandler(values) {
@@ -104,13 +72,13 @@ const AddSkills = () => {
         <>
             <StatusBar style="light" />
 
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Create exo</Text>
+            <View style={formStyles.header}>
+                <Text style={formStyles.headerText}>Create exo</Text>
             </View>
 
             {/* https://github.com/APSL/react-native-keyboard-aware-scroll-view */}
             <KeyboardAwareScrollView
-                style={styles.content}
+                style={formStyles.content}
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
                 extraScrollHeight={150}
@@ -161,13 +129,13 @@ const AddSkills = () => {
                             >
                                 <View
                                     style={[
-                                        styles.button,
+                                        formStyles.button,
                                         {
                                             opacity: isFormValid(isValid, touched) ? 1 : 0.5,
                                         },
                                     ]}
                                 >
-                                    <Text style={styles.buttonText}>SUBMIT</Text>
+                                    <Text style={formStyles.buttonText}>SUBMIT</Text>
                                 </View>
                             </TouchableOpacity>
                         </>

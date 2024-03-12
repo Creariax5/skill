@@ -2,7 +2,7 @@ import { StyleSheet, Platform } from "react-native";
 import { FontFamily, FontSize, Color, Border, Padding } from "../GlobalStyles";
 import Constants from "expo-constants";
 
-export const styles = StyleSheet.create({
+export const formStyles = StyleSheet.create({
     skills: {
         flex: 1,
         justifyContent: "flex",
@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
     },
     label: {
-        color: Color.gray,
+        color: Color.white,
         fontSize: 16,
         lineHeight: 30,
     },

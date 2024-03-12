@@ -59,36 +59,6 @@ export default function App() {
         name: "Pompes sur 1 doigt",
         text: "Difficulty : medium"
       },
-      {
-        id: 4,
-        name: "Human flag",
-        text: "Difficulty : easy",
-      },
-      {
-        id: 5,
-        name: "Front lever",
-        text: "Difficulty : hard"
-      },
-      {
-        id: 6,
-        name: "Pompes sur 1 doigt",
-        text: "Difficulty : medium"
-      },
-      {
-        id: 7,
-        name: "Human flag",
-        text: "Difficulty : easy",
-      },
-      {
-        id: 8,
-        name: "Front lever",
-        text: "Difficulty : hard"
-      },
-      {
-        id: 9,
-        name: "Pompes sur 1 doigt",
-        text: "Difficulty : medium"
-      },
     ]
   );*/
 }

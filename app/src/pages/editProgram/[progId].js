@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, View, Pressable, TouchableOpacity, ToastAndroid } from "react-native";
 import { useLocalSearchParams } from 'expo-router';
 import { Image } from "expo-image";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Modalize } from 'react-native-modalize';
 import ExoModal from './exoModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 import { styleExo, styleStep, styles, modalStyle } from "../program";
 
 const imgSrc = "../../../assets/";
+var numExo = 0;
 
 const exoStatu = {
     IN_PROGRESS: 0,
@@ -52,6 +55,7 @@ function Exo(stepData, id, key, data, setData) {
 }
 
 function Adder(id, key, openModal) {
+    numExo = key * 3 + id;
     return (
         <View style={styleExo.exo}>
 
@@ -135,6 +139,30 @@ const Program = () => {
 
     const modalRef = React.useRef(null);
     const openModal = () => modalRef?.current?.open();
+    const closeModal = () => modalRef?.current?.close();
+
+    const [exosData, setExosData] = useState([]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const savedData = await AsyncStorage.getItem('exo_' + progId);
+                if (savedData !== null) {
+                    setExosData(JSON.parse(savedData));
+                }
+            } catch (error) {
+                console.error("Error loading data: ", error);
+            }
+        };
+        loadData();
+    }, []);
+
+    const exoCreated = () => {
+        closeModal();
+
+
+
+    };
 
     React.useEffect(() => {
         // Déplacer la ScrollView vers le bas lors du chargement de la page
@@ -162,10 +190,12 @@ const Program = () => {
             <Modalize
                 ref={modalRef}
                 scrollViewProps={{ showsVerticalScrollIndicator: false }}
-                snapPoint={700}
+                snapPoint={400}
                 modalStyle={modalStyle.main}
             >
-                <ExoModal />
+
+                <ExoModal closeModal={exoCreated} id={progId} numExo={numExo} />
+
             </Modalize>
         </GestureHandlerRootView>
     );

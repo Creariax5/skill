@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, View, Pressable, TouchableOpacity, ToastAndroid } from "react-native";
 import { useLocalSearchParams } from 'expo-router';
 import { Image } from "expo-image";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Modalize } from 'react-native-modalize';
@@ -203,11 +204,35 @@ const Program = () => {
     const modalRef = React.useRef(null);
     const openModal = () => modalRef?.current?.open();
 
+    const [exosData, setExosData] = useState([]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const savedData = await AsyncStorage.getItem('exo_' + progId);
+                if (savedData !== null) {
+                    const parsedData = JSON.parse(savedData);
+                    setExosData(parsedData);
+                    console.log('Data loaded successfully:', parsedData);
+                    console.log('exo_' + progId + " : " + exosData);
+                }
+            } catch (error) {
+                console.error("Error loading data: ", error);
+            }
+        };
+        loadData();
+    }, []);
+
     React.useEffect(() => {
         // Déplacer la ScrollView vers le bas lors du chargement de la page
         scrollViewRef.current.scrollToEnd({ animated: false });
 
     }, []);
+
+    React.useEffect(() => {
+        console.log('exo_' + progId + " : ", exosData);
+    }, [exosData]); // Log exosData whenever it changes
+
     return (
         <GestureHandlerRootView style={styles.spe}>
             <ScrollView
