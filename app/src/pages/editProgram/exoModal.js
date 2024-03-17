@@ -86,6 +86,7 @@ const ExoModal = ({ closeModal, id, numExo }) => {
         try {
             const jsonValue = JSON.stringify(value);
             await AsyncStorage.setItem('exo_' + id, jsonValue);
+            //await AsyncStorage.removeItem('exo_' + id)
 
         } catch (e) {
             // saving error
@@ -122,14 +123,17 @@ const ExoModal = ({ closeModal, id, numExo }) => {
 
             var num = numExo % 3;
             var rang = (numExo - num) / 3;
+            console.log("numExo : " + numExo);
 
             var dataToStore = exosData;
             try {
+                console.log("rang : " + rang);
+                console.log("num : " + num);
                 dataToStore[rang].exo[num] = { id: num, statu: 0, text: values.exoReps, img: 0 };
 
             } catch (error) {
                 dataToStore.push({
-                    id: dataToStore.length() + 1,
+                    id: dataToStore.length + 1,
                     exo: [
                         {},
                         {},
@@ -140,6 +144,7 @@ const ExoModal = ({ closeModal, id, numExo }) => {
 
             }
 
+            console.log("4 : " + JSON.stringify(dataToStore));
             storeData(dataToStore);
 
         }

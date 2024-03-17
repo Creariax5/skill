@@ -65,6 +65,7 @@ function validate(data, setData, step, setstep) {
 }
 
 function Exo(exoData, key, data, setData, openModal) {
+    console.log("exoData : " + JSON.stringify(exoData));
     if (exoData.statu == exoStatu.IN_PROGRESS) {
         return (
             <View style={styleExo.exo}>
@@ -133,36 +134,51 @@ function Exo(exoData, key, data, setData, openModal) {
 function Step(key, data, setData, step, setstep, openModal) {
     newData = data;
 
-    var stepData = newData.find(item => item.id === key);
-    return (
-        <View key={key} style={[styleStep.stepSpaceBlock]}>
-            <View style={[styleStep.childLayout]} />
+    try {
+        var stepData = newData.find(item => item.id === key);
+        console.log("newData : " + JSON.stringify(newData));
+        console.log("stepData : " + JSON.stringify(stepData));
+
+        return (
+            <View key={key} style={[styleStep.stepSpaceBlock]}>
+                <View style={[styleStep.childLayout]} />
 
 
-            {step == key ?
-                <TouchableOpacity
-                    style={[styleStep.buttons, styleStep.buttonsValidate]}
-                    onPress={() => validate(data, setData, step, setstep)}
-                >
-                    <Text style={[styleStep.label, styleStep.labelValidate]}>Validate</Text>
-                </TouchableOpacity>
-                :
-                <View style={[styleStep.buttons]} >
-                    <Text style={[styleStep.label]}>Step {key}</Text>
-                </View>}
+                {step == key ?
+                    <TouchableOpacity
+                        style={[styleStep.buttons, styleStep.buttonsValidate]}
+                        onPress={() => validate(data, setData, step, setstep)}
+                    >
+                        <Text style={[styleStep.label, styleStep.labelValidate]}>Validate</Text>
+                    </TouchableOpacity>
+                    :
+                    <View style={[styleStep.buttons]} >
+                        <Text style={[styleStep.label]}>Step {key}</Text>
+                    </View>}
 
 
-            <View style={[styleStep.exos]}>
-                {Exo(stepData.exo.find(exoItem => exoItem.id === '0'), key, newData, setData, openModal)}
-                {Exo(stepData.exo.find(exoItem => exoItem.id === '1'), key, newData, setData, openModal)}
-                {Exo(stepData.exo.find(exoItem => exoItem.id === '2'), key, newData, setData, openModal)}
+                <View style={[styleStep.exos]}>
+                    {Exo(stepData.exo[0], key, newData, setData, openModal)}
+                    {Exo(stepData.exo[1], key, newData, setData, openModal)}
+                    {Exo(stepData.exo[2], key, newData, setData, openModal)}
+                </View>
             </View>
-        </View>
-    );
+        );
+    } catch (error) {
+        console.log("step error: " + error);
+        return (
+            <View key={key}>
+            </View>
+        );
+    }
+
+
 }
 
 function renderStep(data, setData, step, setstep, openModal) {
     var items = [];
+
+    console.log("data : " + JSON.stringify(data));
 
     //create exo road
     for (let i = 0; i < data.length; i++) {
@@ -229,10 +245,6 @@ const Program = () => {
 
     }, []);
 
-    React.useEffect(() => {
-        console.log('exo_' + progId + " : ", exosData);
-    }, [exosData]); // Log exosData whenever it changes
-
     return (
         <GestureHandlerRootView style={styles.spe}>
             <ScrollView
@@ -256,7 +268,7 @@ const Program = () => {
                     />
                 }
 
-                {renderStep(data, setData, step, setstep, openModal)}
+                {renderStep(exosData, setExosData, step, setstep, openModal)}
             </ScrollView>
             <Modalize
                 ref={modalRef}

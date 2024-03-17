@@ -11,7 +11,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styleExo, styleStep, styles, modalStyle } from "../program";
 
 const imgSrc = "../../../assets/";
-var numExo = 0;
 
 const exoStatu = {
     IN_PROGRESS: 0,
@@ -55,13 +54,14 @@ function Exo(stepData, id, key, data, setData) {
 }
 
 function Adder(id, key, openModal) {
-    numExo = key * 3 + id;
+    const elNumExo = key * 3 + parseInt(id) - 3;
+
     return (
         <View style={styleExo.exo}>
 
             <TouchableOpacity
                 style={[styleExo.exoItem]}
-                onPress={() => openModal()}
+                onPress={() => openModal(elNumExo)}
             >
                 <Image
                     style={styleExo.exoAdder}
@@ -82,17 +82,17 @@ function Step(key, data, setData, openModal) {
         stepData = newData.find(item => item.id === key);
 
         return (
-            <View key={key} style={[styleStep.stepSpaceBlock]}>
+            <View key={key + 1} style={[styleStep.stepSpaceBlock]}>
                 <View style={[styleStep.childLayout]} />
 
                 <View style={[styleStep.buttons]} >
-                    <Text style={[styleStep.label]}>Step {key}</Text>
+                    <Text style={[styleStep.label]}>Step {key + 1}</Text>
                 </View>
 
                 <View style={[styleStep.exos]}>
-                    {Exo(stepData, '0', key, newData, setData)}
-                    {Exo(stepData, '1', key, newData, setData)}
-                    {Exo(stepData, '2', key, newData, setData)}
+                    {Exo(stepData, '0', key + 1, newData, setData)}
+                    {Exo(stepData, '1', key + 1, newData, setData)}
+                    {Exo(stepData, '2', key + 1, newData, setData)}
                 </View>
             </View>
         );
@@ -121,11 +121,12 @@ function Step(key, data, setData, openModal) {
 function renderStep(data, setData, openModal) {
     var items = [];
 
+    items.push(Step(data.length + 1, data, setData, openModal));
+
     for (let i = 0; i < data.length; i++) {
 
         items.push(Step(data.length - i, data, setData, openModal));
     }
-    items.push(Step(data.length, data, setData, openModal));
 
     return items;
 }
@@ -136,19 +137,29 @@ const Program = () => {
     const { progId } = useLocalSearchParams();
 
     const [data, setData] = useState([]);
+    const [numExo, setNumExo] = useState(0);
+
 
     const modalRef = React.useRef(null);
-    const openModal = () => modalRef?.current?.open();
+    const openModal = (elNumExo) => {
+        console.log("elNumExo : " + elNumExo)
+        setNumExo(elNumExo);
+        modalRef?.current?.open();
+    }
     const closeModal = () => modalRef?.current?.close();
 
     const [exosData, setExosData] = useState([]);
 
     useEffect(() => {
+        // Déplacer la ScrollView vers le bas lors du chargement de la page
+        scrollViewRef.current.scrollToEnd({ animated: false });
+
         const loadData = async () => {
             try {
                 const savedData = await AsyncStorage.getItem('exo_' + progId);
                 if (savedData !== null) {
                     setExosData(JSON.parse(savedData));
+                    console.log("savedData : " + savedData);
                 }
             } catch (error) {
                 console.error("Error loading data: ", error);
@@ -164,11 +175,6 @@ const Program = () => {
 
     };
 
-    React.useEffect(() => {
-        // Déplacer la ScrollView vers le bas lors du chargement de la page
-        scrollViewRef.current.scrollToEnd({ animated: false });
-
-    }, []);
     return (
         <GestureHandlerRootView style={styles.spe}>
             <ScrollView
@@ -184,7 +190,7 @@ const Program = () => {
                     source={require(imgSrc + "trophy.png")}
                 />
 
-                {renderStep(data, setData, openModal)}
+                {renderStep(exosData, setExosData, openModal)}
 
             </ScrollView>
             <Modalize
