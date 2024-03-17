@@ -12,6 +12,15 @@ import { validationSchema } from "../form/validRep";
 
 const imgSrc = "../../../assets/";
 
+const exoStatu = {
+    IN_PROGRESS: 0,
+    SELECTED: 1,
+    TO_DO: 2,
+    FINISH: 3,
+}
+
+let trainStep = 1;
+
 function Choosed(key, setStep) {
     setStep(1);
     return;
@@ -53,11 +62,12 @@ function RenderSkills({ skillsData, setSkillsData, setStep }) {
     return items;
 }
 
-const ExoModal = ({ closeModal, id, numExo }) => {
+const ExoModal = ({ closeModal, id, numExo, loadData, trainingStep }) => {
 
     const [skillsData, setSkillsData] = useState([]);
     const [exosData, setExosData] = useState([]);
     const [step, setStep] = useState(0);
+    trainStep = trainingStep;
 
     useEffect(() => {
         const loadData = async () => {
@@ -93,6 +103,7 @@ const ExoModal = ({ closeModal, id, numExo }) => {
             console.error("saving error");
 
         }
+        loadData();
     };
 
     if (step == 0) {
@@ -129,7 +140,13 @@ const ExoModal = ({ closeModal, id, numExo }) => {
             try {
                 console.log("rang : " + rang);
                 console.log("num : " + num);
-                dataToStore[rang].exo[num] = { id: num, statu: 0, text: values.exoReps, img: 0 };
+
+                if (trainStep == rang + 1) {
+                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.IN_PROGRESS, text: values.exoReps, img: 0 };
+                } else {
+                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.TO_DO, text: values.exoReps, img: 0 };
+                }
+
 
             } catch (error) {
                 dataToStore.push({
@@ -140,7 +157,11 @@ const ExoModal = ({ closeModal, id, numExo }) => {
                         {},
                     ],
                 });
-                dataToStore[rang].exo[num] = { id: num, statu: 0, text: values.exoReps, img: 0 };
+                if (trainStep == rang + 1) {
+                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.IN_PROGRESS, text: values.exoReps, img: 0 };
+                } else {
+                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.TO_DO, text: values.exoReps, img: 0 };
+                }
 
             }
 

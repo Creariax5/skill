@@ -13,6 +13,7 @@ import { styleExo, styleStep, styles, modalStyle } from "../program";
 
 const imgSrc = "../../../assets/";
 const nbStep = 0;
+let id = 0;
 
 const exoStatu = {
     IN_PROGRESS: 0,
@@ -39,6 +40,18 @@ function updateExo(exoData, key, data, setData) {
 
 }
 
+const storeData = async (value) => {
+    try {
+        const jsonValue = JSON.stringify(value);
+        await AsyncStorage.setItem('exo_' + id, jsonValue);
+
+    } catch (e) {
+        // saving error
+        console.error("saving error");
+
+    }
+};
+
 function validate(data, setData, step, setstep) {
     var stepToUpdate = data.find(item => item.id === step).exo;
     if (stepToUpdate[0].statu == exoStatu.SELECTED && stepToUpdate[1].statu == exoStatu.SELECTED && stepToUpdate[2].statu == exoStatu.SELECTED) {
@@ -55,6 +68,8 @@ function validate(data, setData, step, setstep) {
             }
             setData([...data]);
 
+            storeData(data);
+
         } catch (error) {
             ToastAndroid.show("You're finished !!!", ToastAndroid.SHORT);
         }
@@ -65,7 +80,6 @@ function validate(data, setData, step, setstep) {
 }
 
 function Exo(exoData, key, data, setData, openModal) {
-    console.log("exoData : " + JSON.stringify(exoData));
     if (exoData.statu == exoStatu.IN_PROGRESS) {
         return (
             <View style={styleExo.exo}>
@@ -135,35 +149,46 @@ function Step(key, data, setData, step, setstep, openModal) {
     newData = data;
 
     try {
-        var stepData = newData.find(item => item.id === key);
-        console.log("newData : " + JSON.stringify(newData));
-        console.log("stepData : " + JSON.stringify(stepData));
+        var stepData = newData.find(item => item.id === key).exo;
 
-        return (
-            <View key={key} style={[styleStep.stepSpaceBlock]}>
-                <View style={[styleStep.childLayout]} />
+        if (step == key) {
 
+            return (
+                <View key={key} style={[styleStep.stepSpaceBlock]}>
+                    <View style={[styleStep.childLayout]} />
 
-                {step == key ?
                     <TouchableOpacity
                         style={[styleStep.buttons, styleStep.buttonsValidate]}
                         onPress={() => validate(data, setData, step, setstep)}
                     >
                         <Text style={[styleStep.label, styleStep.labelValidate]}>Validate</Text>
                     </TouchableOpacity>
-                    :
+
+                    <View style={[styleStep.exos]}>
+                        {Exo(stepData[0], key, newData, setData, openModal)}
+                        {Exo(stepData[1], key, newData, setData, openModal)}
+                        {Exo(stepData[2], key, newData, setData, openModal)}
+                    </View>
+                </View>
+            );
+        } else {
+            return (
+                <View key={key} style={[styleStep.stepSpaceBlock]}>
+                    <View style={[styleStep.childLayout]} />
+
                     <View style={[styleStep.buttons]} >
                         <Text style={[styleStep.label]}>Step {key}</Text>
-                    </View>}
+                    </View>
 
-
-                <View style={[styleStep.exos]}>
-                    {Exo(stepData.exo[0], key, newData, setData, openModal)}
-                    {Exo(stepData.exo[1], key, newData, setData, openModal)}
-                    {Exo(stepData.exo[2], key, newData, setData, openModal)}
+                    <View style={[styleStep.exos]}>
+                        {Exo(stepData[0], key, newData, setData, openModal)}
+                        {Exo(stepData[1], key, newData, setData, openModal)}
+                        {Exo(stepData[2], key, newData, setData, openModal)}
+                    </View>
                 </View>
-            </View>
-        );
+            );
+        }
+
     } catch (error) {
         console.log("step error: " + error);
         return (
@@ -177,8 +202,6 @@ function Step(key, data, setData, step, setstep, openModal) {
 
 function renderStep(data, setData, step, setstep, openModal) {
     var items = [];
-
-    console.log("data : " + JSON.stringify(data));
 
     //create exo road
     for (let i = 0; i < data.length; i++) {
@@ -213,6 +236,7 @@ const Program = () => {
     const scrollViewRef = React.useRef(null);
 
     const { progId } = useLocalSearchParams();
+    id = progId;
 
     const [data, setData] = useState([]);
     const [step, setstep] = useState(1);
@@ -229,11 +253,22 @@ const Program = () => {
                 if (savedData !== null) {
                     const parsedData = JSON.parse(savedData);
                     setExosData(parsedData);
-                    console.log('Data loaded successfully:', parsedData);
-                    console.log('exo_' + progId + " : " + exosData);
+
+                    let element;
+                    for (let i = 0; i < parsedData.length; i++) {
+                        element = parsedData[i];
+
+                        if (element.exo[0].statu == 3) {
+                            setstep(i + 2);
+
+                        }
+
+                    }
+
                 }
             } catch (error) {
                 console.error("Error loading data: ", error);
+
             }
         };
         loadData();

@@ -42,6 +42,8 @@ export default function App() {
     return null;
   }
 
+  //AsyncStorage.clear();
+
   /*storeData(
     [
       {

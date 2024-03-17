@@ -23,9 +23,12 @@ var images = [
     require(imgSrc + "pushup.gif"),
 ];
 
-function Exo(stepData, id, key, data, setData) {
-    try {
-        exoData = stepData.exo.find(exoItem => exoItem.id === id);
+function Exo(stepData, id, key, openModal) {
+    exoData = stepData.exo[id];
+
+    if (JSON.stringify(exoData) != "{}") {
+        const elNumExo = key * 3 + parseInt(id) - 3;
+
         return (
             <View style={styleExo.exo}>
                 <Image
@@ -36,6 +39,8 @@ function Exo(stepData, id, key, data, setData) {
                 <Text style={[styleExo.pushUp]}>PUSH UP</Text>
                 <Pressable
                     style={[styleExo.exoItem]}
+                    onPress={() => openModal(elNumExo)}
+                    onLongPress={() => openModal(elNumExo)}
                 />
                 <View style={styleExo.exoPosition}>
                     <Image
@@ -47,7 +52,7 @@ function Exo(stepData, id, key, data, setData) {
                 </View>
             </View>
         );
-    } catch (error) {
+    } else {
         return Adder(id, key, openModal);
     }
 
@@ -82,17 +87,17 @@ function Step(key, data, setData, openModal) {
         stepData = newData.find(item => item.id === key);
 
         return (
-            <View key={key + 1} style={[styleStep.stepSpaceBlock]}>
+            <View key={key} style={[styleStep.stepSpaceBlock]}>
                 <View style={[styleStep.childLayout]} />
 
                 <View style={[styleStep.buttons]} >
-                    <Text style={[styleStep.label]}>Step {key + 1}</Text>
+                    <Text style={[styleStep.label]}>Step {key}</Text>
                 </View>
 
                 <View style={[styleStep.exos]}>
-                    {Exo(stepData, '0', key + 1, newData, setData)}
-                    {Exo(stepData, '1', key + 1, newData, setData)}
-                    {Exo(stepData, '2', key + 1, newData, setData)}
+                    {Exo(stepData, '0', key, openModal)}
+                    {Exo(stepData, '1', key, openModal)}
+                    {Exo(stepData, '2', key, openModal)}
                 </View>
             </View>
         );
@@ -142,36 +147,36 @@ const Program = () => {
 
     const modalRef = React.useRef(null);
     const openModal = (elNumExo) => {
-        console.log("elNumExo : " + elNumExo)
         setNumExo(elNumExo);
         modalRef?.current?.open();
     }
     const closeModal = () => modalRef?.current?.close();
 
     const [exosData, setExosData] = useState([]);
+    const [step, setstep] = useState(1);
+
+    const loadData = async () => {
+        try {
+            const savedData = await AsyncStorage.getItem('exo_' + progId);
+            if (savedData !== null) {
+                setExosData(JSON.parse(savedData));
+            }
+
+        } catch (error) {
+            console.error("Error loading data: ", error);
+        }
+    };
 
     useEffect(() => {
         // Déplacer la ScrollView vers le bas lors du chargement de la page
         scrollViewRef.current.scrollToEnd({ animated: false });
 
-        const loadData = async () => {
-            try {
-                const savedData = await AsyncStorage.getItem('exo_' + progId);
-                if (savedData !== null) {
-                    setExosData(JSON.parse(savedData));
-                    console.log("savedData : " + savedData);
-                }
-            } catch (error) {
-                console.error("Error loading data: ", error);
-            }
-        };
+
         loadData();
     }, []);
 
     const exoCreated = () => {
         closeModal();
-
-
 
     };
 
@@ -200,7 +205,7 @@ const Program = () => {
                 modalStyle={modalStyle.main}
             >
 
-                <ExoModal closeModal={exoCreated} id={progId} numExo={numExo} />
+                <ExoModal closeModal={exoCreated} id={progId} numExo={numExo} loadData={loadData} trainingStep={step} />
 
             </Modalize>
         </GestureHandlerRootView>
