@@ -134,13 +134,9 @@ const ExoModal = ({ closeModal, id, numExo, loadData, trainingStep }) => {
 
             var num = numExo % 3;
             var rang = (numExo - num) / 3;
-            console.log("numExo : " + numExo);
 
             var dataToStore = exosData;
             try {
-                console.log("rang : " + rang);
-                console.log("num : " + num);
-
                 if (trainStep == rang + 1) {
                     dataToStore[rang].exo[num] = { id: num, statu: exoStatu.IN_PROGRESS, text: values.exoReps, img: 0 };
                 } else {
@@ -165,7 +161,6 @@ const ExoModal = ({ closeModal, id, numExo, loadData, trainingStep }) => {
 
             }
 
-            console.log("4 : " + JSON.stringify(dataToStore));
             storeData(dataToStore);
 
         }

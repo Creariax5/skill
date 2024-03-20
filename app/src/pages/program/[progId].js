@@ -14,6 +14,7 @@ import { styleExo, styleStep, styles, modalStyle } from "../program";
 const imgSrc = "../../../assets/";
 const nbStep = 0;
 let id = 0;
+let canValid = false;
 
 const exoStatu = {
     IN_PROGRESS: 0,
@@ -26,14 +27,54 @@ var images = [
     require(imgSrc + "pushup.gif"),
 ];
 
+function stepExoSelected(currentStep) {
+    /*all exo of this step are selected*/
+
+    let nbUndef = [];
+    for (let i = 0; i < currentStep.length; i++) {
+        if (currentStep[i].id != undefined) {
+            nbUndef.push(i);
+        }
+
+    }
+
+    if (nbUndef.length == 3) {
+        if (currentStep[0].statu == exoStatu.SELECTED && currentStep[1].statu == exoStatu.SELECTED && currentStep[2].statu == exoStatu.SELECTED) {
+            return true;
+
+        } else {
+            return false;
+        }
+    } else if (nbUndef.length == 2) {
+        if (currentStep[nbUndef[0]].statu == exoStatu.SELECTED && currentStep[nbUndef[1]].statu) {
+            return true;
+
+        } else {
+            return false;
+        }
+    } else {
+        if (currentStep[nbUndef[0]].statu == exoStatu.SELECTED) {
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+}
+
 function updateExo(exoData, key, data, setData) {
     if (exoData.statu == exoStatu.IN_PROGRESS) {
         exoData.statu = exoStatu.SELECTED;
+
     } else if (exoData.statu = exoStatu.SELECTED) {
         exoData.statu = exoStatu.IN_PROGRESS;
+
     }
 
-    const exoToUpdate = data.find(item => item.id === key).exo.find(exoItem => exoItem.id === exoData.id);
+    const stepToUpdate = data.find(item => item.id === key).exo
+    canValid = stepExoSelected(stepToUpdate);
+
+    const exoToUpdate = stepToUpdate.find(exoItem => exoItem.id === exoData.id);
     Object.assign(exoToUpdate, exoData);
 
     setData([...data]);
@@ -54,21 +95,24 @@ const storeData = async (value) => {
 
 function validate(data, setData, step, setstep) {
     var stepToUpdate = data.find(item => item.id === step).exo;
-    if (stepToUpdate[0].statu == exoStatu.SELECTED && stepToUpdate[1].statu == exoStatu.SELECTED && stepToUpdate[2].statu == exoStatu.SELECTED) {
+    if (stepExoSelected(stepToUpdate)) {
         //set exo to finished
         for (let i = 0; i < 3; i++) {
             stepToUpdate[i].statu = exoStatu.FINISH;
 
         }
         setstep(step + 1);
+        setData([...data]);
+        storeData(data);
         try {
             stepToUpdate = data.find(item => item.id === step + 1).exo;
             for (let i = 0; i < 3; i++) {
                 stepToUpdate[i].statu = exoStatu.IN_PROGRESS;
+
             }
             setData([...data]);
-
             storeData(data);
+            canValid = false;
 
         } catch (error) {
             ToastAndroid.show("You're finished !!!", ToastAndroid.SHORT);
@@ -76,10 +120,18 @@ function validate(data, setData, step, setstep) {
 
     } else {
         ToastAndroid.show("You didn't finished all exos", ToastAndroid.SHORT);
+
     }
 }
 
 function Exo(exoData, key, data, setData, openModal) {
+    if (exoData.id == undefined) {
+        return (
+            <View style={styleExo.exo}>
+
+            </View>
+        );
+    }
     if (exoData.statu == exoStatu.IN_PROGRESS) {
         return (
             <View style={styleExo.exo}>
@@ -158,7 +210,7 @@ function Step(key, data, setData, step, setstep, openModal) {
                     <View style={[styleStep.childLayout]} />
 
                     <TouchableOpacity
-                        style={[styleStep.buttons, styleStep.buttonsValidate]}
+                        style={[styleStep.buttons, styleStep.buttonsValidate, { opacity: canValid ? 1 : 0.5, }]}
                         onPress={() => validate(data, setData, step, setstep)}
                     >
                         <Text style={[styleStep.label, styleStep.labelValidate]}>Validate</Text>
@@ -252,22 +304,39 @@ const Program = () => {
                 const savedData = await AsyncStorage.getItem('exo_' + progId);
                 if (savedData !== null) {
                     const parsedData = JSON.parse(savedData);
-                    setExosData(parsedData);
 
-                    let element;
-                    for (let i = 0; i < parsedData.length; i++) {
-                        element = parsedData[i];
+                    let tmpStep = -1;
+                    let element = parsedData[parsedData.length - 1];
 
-                        if (element.exo[0].statu == 3) {
-                            setstep(i + 2);
+                    if (element.exo[0].statu == exoStatu.FINISH || element.exo[1].statu == exoStatu.FINISH || element.exo[2].statu == exoStatu.FINISH) {
+                        setstep(-1);
+
+                    } else {
+                        for (let i = 0; i < parsedData.length; i++) {
+                            element = parsedData[i];
+
+                            if (element.exo[0].statu == exoStatu.IN_PROGRESS || element.exo[1].statu == exoStatu.IN_PROGRESS || element.exo[2].statu == exoStatu.IN_PROGRESS) {
+                                setstep(i + 1);
+                                tmpStep = i;
+                            }
 
                         }
-
                     }
+
+                    if (tmpStep >= 0) {
+                        for (let i = 0; i < parsedData.length; i++) {
+                            if (parsedData[tmpStep].exo[i] != undefined) {
+                                parsedData[tmpStep].exo[i].statu = exoStatu.IN_PROGRESS;
+                            }
+                        }
+                    }
+
+                    setExosData(parsedData);
 
                 }
             } catch (error) {
                 console.error("Error loading data: ", error);
+                //await AsyncStorage.removeItem('exo_' + progId)
 
             }
         };

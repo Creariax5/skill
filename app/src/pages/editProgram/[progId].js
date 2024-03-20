@@ -26,7 +26,7 @@ var images = [
 function Exo(stepData, id, key, openModal) {
     exoData = stepData.exo[id];
 
-    if (JSON.stringify(exoData) != "{}") {
+    if (exoData.id != undefined) {
         const elNumExo = key * 3 + parseInt(id) - 3;
 
         return (
