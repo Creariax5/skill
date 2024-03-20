@@ -6,8 +6,7 @@
 
 
 # modif
-I'm using Expo.
-I went to "node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js"
+go to "node_modules/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js"
 
 where is:
 if (this.props.onLayout) {
@@ -20,4 +19,11 @@ event.persist();
 //this.props.onLayout(event);
 }
 
-It worked here!!
+# commands
+git add .
+git commit -m "link skill to exo"
+git push -u origin main
+
+cd app/src
+find . -type f -print0 | xargs -0 cat | wc -l
+cd ../../

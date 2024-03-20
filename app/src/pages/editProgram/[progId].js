@@ -23,10 +23,12 @@ var images = [
     require(imgSrc + "pushup.gif"),
 ];
 
-function Exo(stepData, id, key, openModal) {
+function Exo(stepData, id, key, openModal, skillsData) {
     exoData = stepData.exo[id];
 
     if (exoData.id != undefined) {
+        var mySkill = skillsData.find(item => item.id === exoData.exoId);
+
         const elNumExo = key * 3 + parseInt(id) - 3;
 
         return (
@@ -34,9 +36,9 @@ function Exo(stepData, id, key, openModal) {
                 <Image
                     style={styleExo.exoChild}
                     contentFit="cover"
-                    source={images[exoData.img]}
+                    source={images[0]}
                 />
-                <Text style={[styleExo.pushUp]}>PUSH UP</Text>
+                <Text style={[styleExo.pushUp]}>{mySkill.name}</Text>
                 <Pressable
                     style={[styleExo.exoItem]}
                     onPress={() => openModal(elNumExo)}
@@ -78,7 +80,7 @@ function Adder(id, key, openModal) {
     );
 }
 
-function Step(key, data, setData, openModal) {
+function Step(key, data, setData, openModal, skillsData) {
     newData = data;
 
     var stepData;
@@ -95,14 +97,15 @@ function Step(key, data, setData, openModal) {
                 </View>
 
                 <View style={[styleStep.exos]}>
-                    {Exo(stepData, '0', key, openModal)}
-                    {Exo(stepData, '1', key, openModal)}
-                    {Exo(stepData, '2', key, openModal)}
+                    {Exo(stepData, '0', key, openModal, skillsData)}
+                    {Exo(stepData, '1', key, openModal, skillsData)}
+                    {Exo(stepData, '2', key, openModal, skillsData)}
                 </View>
             </View>
         );
 
     } catch (error) {
+        //console.log(error);
         return (
             <View key={key} style={[styleStep.stepSpaceBlock]}>
                 <View style={[styleStep.childLayout]} />
@@ -123,14 +126,14 @@ function Step(key, data, setData, openModal) {
 
 }
 
-function renderStep(data, setData, openModal) {
+function renderStep(data, setData, openModal, skillsData) {
     var items = [];
 
-    items.push(Step(data.length + 1, data, setData, openModal));
+    items.push(Step(data.length + 1, data, setData, openModal, skillsData));
 
     for (let i = 0; i < data.length; i++) {
 
-        items.push(Step(data.length - i, data, setData, openModal));
+        items.push(Step(data.length - i, data, setData, openModal, skillsData));
     }
 
     return items;
@@ -140,8 +143,6 @@ const Program = () => {
     const scrollViewRef = React.useRef(null);
 
     const { progId } = useLocalSearchParams();
-
-    const [data, setData] = useState([]);
     const [numExo, setNumExo] = useState(0);
 
 
@@ -152,6 +153,7 @@ const Program = () => {
     }
     const closeModal = () => modalRef?.current?.close();
 
+    const [skillsData, setSkillsData] = useState([]);
     const [exosData, setExosData] = useState([]);
     const [step, setstep] = useState(1);
 
@@ -162,6 +164,14 @@ const Program = () => {
                 setExosData(JSON.parse(savedData));
             }
 
+        } catch (error) {
+            console.error("Error loading data: ", error);
+        }
+        try {
+            const savedData = await AsyncStorage.getItem("skills");
+            if (savedData !== null) {
+                setSkillsData(JSON.parse(savedData));
+            }
         } catch (error) {
             console.error("Error loading data: ", error);
         }
@@ -195,7 +205,7 @@ const Program = () => {
                     source={require(imgSrc + "trophy.png")}
                 />
 
-                {renderStep(exosData, setExosData, openModal)}
+                {renderStep(exosData, setExosData, openModal, skillsData)}
 
             </ScrollView>
             <Modalize

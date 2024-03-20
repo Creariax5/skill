@@ -124,7 +124,7 @@ function validate(data, setData, step, setstep) {
     }
 }
 
-function Exo(exoData, key, data, setData, openModal) {
+function Exo(exoData, key, data, setData, openModal, skillsData) {
     if (exoData.id == undefined) {
         return (
             <View style={styleExo.exo}>
@@ -132,15 +132,17 @@ function Exo(exoData, key, data, setData, openModal) {
             </View>
         );
     }
+    var mySkill = skillsData.find(item => item.id === exoData.exoId);
+
     if (exoData.statu == exoStatu.IN_PROGRESS) {
         return (
             <View style={styleExo.exo}>
                 <Image
                     style={styleExo.exoChild}
                     contentFit="cover"
-                    source={images[exoData.img]}
+                    source={images[0]}
                 />
-                <Text style={[styleExo.pushUp]}>PUSH UP</Text>
+                <Text style={[styleExo.pushUp]}>{mySkill.name}</Text>
                 <Pressable
                     style={[styleExo.exoItem]}
                     onPress={() => updateExo(exoData, key, data, setData)}
@@ -162,9 +164,9 @@ function Exo(exoData, key, data, setData, openModal) {
                 <Image
                     style={styleExo.exoChild}
                     contentFit="cover"
-                    source={images[exoData.img]}
+                    source={images[0]}
                 />
-                <Text style={[styleExo.pushUp]}>PUSH UP</Text>
+                <Text style={[styleExo.pushUp]}>{mySkill.name}</Text>
                 <Pressable
                     style={[styleExo.exoItem, styleExo.exoItemSELECTED]}
                     onPress={() => updateExo(exoData, key, data, setData)}
@@ -186,9 +188,9 @@ function Exo(exoData, key, data, setData, openModal) {
                 <Image
                     style={styleExo.exoChild}
                     contentFit="cover"
-                    source={images[exoData.img]}
+                    source={images[0]}
                 />
-                <Text style={[styleExo.pushUp]}>PUSH UP</Text>
+                <Text style={[styleExo.pushUp]}>{mySkill.name}</Text>
                 <Pressable
                     style={[styleExo.exoItem, styleExo.exoItemTO_DO]}
                 />
@@ -197,7 +199,7 @@ function Exo(exoData, key, data, setData, openModal) {
     }
 }
 
-function Step(key, data, setData, step, setstep, openModal) {
+function Step(key, data, setData, step, setstep, openModal, skillsData) {
     newData = data;
 
     try {
@@ -217,9 +219,9 @@ function Step(key, data, setData, step, setstep, openModal) {
                     </TouchableOpacity>
 
                     <View style={[styleStep.exos]}>
-                        {Exo(stepData[0], key, newData, setData, openModal)}
-                        {Exo(stepData[1], key, newData, setData, openModal)}
-                        {Exo(stepData[2], key, newData, setData, openModal)}
+                        {Exo(stepData[0], key, newData, setData, openModal, skillsData)}
+                        {Exo(stepData[1], key, newData, setData, openModal, skillsData)}
+                        {Exo(stepData[2], key, newData, setData, openModal, skillsData)}
                     </View>
                 </View>
             );
@@ -233,16 +235,16 @@ function Step(key, data, setData, step, setstep, openModal) {
                     </View>
 
                     <View style={[styleStep.exos]}>
-                        {Exo(stepData[0], key, newData, setData, openModal)}
-                        {Exo(stepData[1], key, newData, setData, openModal)}
-                        {Exo(stepData[2], key, newData, setData, openModal)}
+                        {Exo(stepData[0], key, newData, setData, openModal, skillsData)}
+                        {Exo(stepData[1], key, newData, setData, openModal, skillsData)}
+                        {Exo(stepData[2], key, newData, setData, openModal, skillsData)}
                     </View>
                 </View>
             );
         }
 
     } catch (error) {
-        console.log("step error: " + error);
+        //console.log("step error: " + error);
         return (
             <View key={key}>
             </View>
@@ -252,7 +254,7 @@ function Step(key, data, setData, step, setstep, openModal) {
 
 }
 
-function renderStep(data, setData, step, setstep, openModal) {
+function renderStep(data, setData, step, setstep, openModal, skillsData) {
     var items = [];
 
     //create exo road
@@ -278,7 +280,7 @@ function renderStep(data, setData, step, setstep, openModal) {
             });
         }*/
 
-        items.push(Step(data.length - i, data, setData, step, setstep, openModal));
+        items.push(Step(data.length - i, data, setData, step, setstep, openModal, skillsData));
     }
 
     return items;
@@ -290,7 +292,7 @@ const Program = () => {
     const { progId } = useLocalSearchParams();
     id = progId;
 
-    const [data, setData] = useState([]);
+    const [skillsData, setSkillsData] = useState([]);
     const [step, setstep] = useState(1);
 
     const modalRef = React.useRef(null);
@@ -339,6 +341,15 @@ const Program = () => {
                 //await AsyncStorage.removeItem('exo_' + progId)
 
             }
+
+            try {
+                const savedData = await AsyncStorage.getItem("skills");
+                if (savedData !== null) {
+                    setSkillsData(JSON.parse(savedData));
+                }
+            } catch (error) {
+                console.error("Error loading data: ", error);
+            }
         };
         loadData();
     }, []);
@@ -372,7 +383,7 @@ const Program = () => {
                     />
                 }
 
-                {renderStep(exosData, setExosData, step, setstep, openModal)}
+                {renderStep(exosData, setExosData, step, setstep, openModal, skillsData)}
             </ScrollView>
             <Modalize
                 ref={modalRef}

@@ -20,9 +20,11 @@ const exoStatu = {
 }
 
 let trainStep = 1;
+let itemId = 0;
 
 function Choosed(key, setStep) {
     setStep(1);
+    itemId = key;
     return;
 }
 
@@ -138,9 +140,9 @@ const ExoModal = ({ closeModal, id, numExo, loadData, trainingStep }) => {
             var dataToStore = exosData;
             try {
                 if (trainStep == rang + 1) {
-                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.IN_PROGRESS, text: values.exoReps, img: 0 };
+                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.IN_PROGRESS, text: values.exoReps, exoId: itemId };
                 } else {
-                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.TO_DO, text: values.exoReps, img: 0 };
+                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.TO_DO, text: values.exoReps, exoId: itemId };
                 }
 
 
@@ -154,9 +156,9 @@ const ExoModal = ({ closeModal, id, numExo, loadData, trainingStep }) => {
                     ],
                 });
                 if (trainStep == rang + 1) {
-                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.IN_PROGRESS, text: values.exoReps, img: 0 };
+                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.IN_PROGRESS, text: values.exoReps, exoId: itemId };
                 } else {
-                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.TO_DO, text: values.exoReps, img: 0 };
+                    dataToStore[rang].exo[num] = { id: num, statu: exoStatu.TO_DO, text: values.exoReps, exoId: itemId };
                 }
 
             }
