@@ -172,61 +172,66 @@ const ExoModal = ({ closeModal, id, numExo, loadData, trainingStep }) => {
         }
 
         return (
-            <View style={{ paddingTop: 20, paddingBottom: 20 }}>
-                <KeyboardAwareScrollView
-                    style={formStyles.content}
-                    showsVerticalScrollIndicator={false}
-                    keyboardShouldPersistTaps="handled"
-                    extraScrollHeight={150}
-                >
-                    {/* https://formik.org/docs/overview */}
-                    <Formik
-                        initialValues={{
-                            exoReps: "",
-                        }}
-                        onSubmit={onSubmitHandler}
-                        validationSchema={validationSchema}
+            <ScrollView
+                showsVerticalScrollIndicator={true}
+                showsHorizontalScrollIndicator={false}
+            >
+                <View style={{ paddingTop: 20, paddingBottom: 20 }}>
+                    <KeyboardAwareScrollView
+                        style={formStyles.content}
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
+                        extraScrollHeight={150}
                     >
-                        {({
-                            handleChange,
-                            handleBlur,
-                            handleSubmit,
-                            values,
-                            errors,
-                            touched,
-                            isValid,
-                        }) => (
-                            <>
-                                <FormField
-                                    field="exoReps"
-                                    label="Exo Repetitions / time"
-                                    autoCapitalize="words"
-                                    values={values}
-                                    touched={touched}
-                                    errors={errors}
-                                    handleChange={handleChange}
-                                    handleBlur={handleBlur}
-                                />
+                        {/* https://formik.org/docs/overview */}
+                        <Formik
+                            initialValues={{
+                                exoReps: "",
+                            }}
+                            onSubmit={onSubmitHandler}
+                            validationSchema={validationSchema}
+                        >
+                            {({
+                                handleChange,
+                                handleBlur,
+                                handleSubmit,
+                                values,
+                                errors,
+                                touched,
+                                isValid,
+                            }) => (
+                                <>
+                                    <FormField
+                                        field="exoReps"
+                                        label="Exo Repetitions / time"
+                                        autoCapitalize="words"
+                                        values={values}
+                                        touched={touched}
+                                        errors={errors}
+                                        handleChange={handleChange}
+                                        handleBlur={handleBlur}
+                                    />
 
-                                <TouchableOpacity
-                                    onPress={handleSubmit}
-                                >
-                                    <View
-                                        style={[
-                                            formStyles.button,
-                                            {
-                                                opacity: isFormValid(isValid, touched) ? 1 : 0.5,
-                                            },
-                                        ]}
+                                    <TouchableOpacity
+                                        onPress={handleSubmit}
                                     >
-                                        <Text style={formStyles.buttonText}>SUBMIT</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </>
-                        )}
-                    </Formik>
-                </KeyboardAwareScrollView>
-            </View >
+                                        <View
+                                            style={[
+                                                formStyles.button,
+                                                {
+                                                    opacity: isFormValid(isValid, touched) ? 1 : 0.5,
+                                                },
+                                            ]}
+                                        >
+                                            <Text style={formStyles.buttonText}>SUBMIT</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </>
+                            )}
+                        </Formik>
+                    </KeyboardAwareScrollView>
+                </View >
+            </ScrollView>
         );
 
     }

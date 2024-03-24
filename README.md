@@ -27,3 +27,11 @@ git push -u origin main
 cd app/src
 find . -type f -print0 | xargs -0 cat | wc -l
 cd ../../
+
+
+# To Do
+
+-> img system (upload ...)
+-> skill description and shox it on exo modal
+-> skill search sys
+-> skill editing sys
